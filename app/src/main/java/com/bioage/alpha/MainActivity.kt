@@ -99,7 +99,7 @@ private fun BioAge(prefs: SharedPreferences) {
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 0.70", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  ALPHA 2.00", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
                 // Card area takes the space between header and tab bar; the card sits at its bottom
                 // and scrolls inside it, so the tab bar is never pushed off screen.
@@ -136,8 +136,8 @@ private fun BioAge(prefs: SharedPreferences) {
                             }
                             Spacer(Modifier.height(5.dp))
                             Text(chiron30(prefs, sleep, steps, mood, done), color = Ink, fontSize = 14.sp, lineHeight = 21.sp)
-                            HomeSummit50(prefs, done + historyRefresh)
-                            TrailRhythm70(prefs, done + historyRefresh)
+                            SummitRoute200(prefs, done + historyRefresh)
+                            /* Rhythm included in SummitRoute200 */
                             SceneInfo50()
                             Spacer(Modifier.height(10.dp))
                             OutlinedButton(onClick = { chatOpen = true }, modifier = Modifier.fillMaxWidth()) {
@@ -159,13 +159,18 @@ private fun BioAge(prefs: SharedPreferences) {
                             if (saved) Text("Данные сохранены", color = Aqua, fontSize = 12.sp)
                             Spacer(Modifier.height(8.dp))
                             Text("Показатели не являются медицинской оценкой.", color = Muted, fontSize = 12.sp)
-                            HealthSummary50(prefs, historyRefresh)
+                            HealthDashboard100(prefs, historyRefresh)
+                            SevenDayChart200(prefs, historyRefresh)
+                            CompareWeeks200(prefs, historyRefresh)
                             DataCoverage70(prefs, historyRefresh)
-                            Recovery30(prefs, historyRefresh)
+                            if (!prefs.getBoolean("compact_health_100", true)) {
+                                Recovery30(prefs, historyRefresh)
+                            }
                             Goals30(prefs, steps)
                             ChironInsights50(prefs, historyRefresh)
                             GentleMode70(prefs)
                             ChironContext70(prefs, historyRefresh)
+                            ChironCoach200(prefs, historyRefresh)
                             WeeklyReflection50(prefs)
                             Spacer(Modifier.height(12.dp))
                             OutlinedButton(onClick = { healthExpanded = !healthExpanded }, modifier = Modifier.fillMaxWidth()) {
@@ -216,12 +221,15 @@ private fun BioAge(prefs: SharedPreferences) {
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 0.70", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Alpha 2.00", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
                             LocalBackupPanel(prefs)
                             Diagnostics30(prefs)
                             DataAudit50(prefs)
+                            CompactMode100(prefs)
+                            ReleaseStatus100(prefs)
+                            PrivacyAndQuality200(prefs)
                             ReleaseNotes70()
                             Spacer(Modifier.height(12.dp))
                             Text("3D-Кавказ работает локально. Health Connect и медицинский расчёт биологического возраста пока не подключены.", color = Muted, fontSize = 13.sp, lineHeight = 20.sp)
