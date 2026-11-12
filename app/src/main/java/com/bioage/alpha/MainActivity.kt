@@ -39,7 +39,7 @@ private val Ink = Color(0xFFF1F8FA)
 private val Muted = Color(0xFFB7CDD5)
 private val Aqua = Color(0xFFB5F0E7)
 private val Deep = Color(0xFF091D2C)
-private val Glass = Color(0xDF102D40)
+private val Glass = Color(0xD9163044)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,17 +95,17 @@ private fun BioAge(prefs: SharedPreferences) {
     MaterialTheme(colorScheme = colors) {
         Box(Modifier.fillMaxSize().background(Deep)) {
             Caucasus3DScene(camera)
-            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0x65051728), Color.Transparent, Color(0xC9081927)), startY = 0f)))
+            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0x48051728), Color.Transparent, Color(0xB9081927)), startY = 0f)))
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 2.00", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  ALPHA 3.00", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
                 // Card area takes the space between header and tab bar; the card sits at its bottom
                 // and scrolls inside it, so the tab bar is never pushed off screen.
                 BoxWithConstraints(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.BottomCenter) {
                 Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp)
-                    .then(if (tab == 0 && !chatOpen) Modifier.heightIn(max = maxHeight * 0.59f) else Modifier)
+                    .then(if (tab == 0 && !chatOpen) Modifier.heightIn(max = maxHeight * 0.56f) else Modifier)
                     .clip(RoundedCornerShape(28.dp)).background(Glass)
                     .verticalScroll(rememberScrollState()).padding(20.dp)) {
                     when (tab) {
@@ -117,31 +117,18 @@ private fun BioAge(prefs: SharedPreferences) {
                                 }
                                 ChironChat30(prefs, sleep, steps, mood, done)
                             } else {
-                            Text("Твой путь к вершине", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
-                            Spacer(Modifier.height(6.dp))
-                            Text("Каждый день — небольшой шаг вперёд", color = Muted, fontSize = 13.sp)
-                            Spacer(Modifier.height(16.dp))
-                            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                                Metric("ШАГИ", steps.ifBlank { "—" }, Modifier.weight(1f))
-                                Metric("СОН", if(sleep.isBlank()) "—" else "$sleep ч", Modifier.weight(1f))
-                                Metric("ПРИВЫЧКИ", "$done/3", Modifier.weight(1f))
-                            }
-                            Spacer(Modifier.height(14.dp))
+                            Hero300(steps, sleep, done)
+                            Spacer(Modifier.height(12.dp))
                             OrbitControl30(camera) { camera = it }
-                            Spacer(Modifier.height(6.dp))
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Box(Modifier.size(10.dp).clip(RoundedCornerShape(50)).background(Aqua))
-                                Spacer(Modifier.width(9.dp))
-                                Text("ХИРОН", fontWeight = FontWeight.Bold, color = Aqua, letterSpacing = 1.sp)
-                            }
-                            Spacer(Modifier.height(5.dp))
-                            Text(chiron30(prefs, sleep, steps, mood, done), color = Ink, fontSize = 14.sp, lineHeight = 21.sp)
-                            SummitRoute200(prefs, done + historyRefresh)
-                            /* Rhythm included in SummitRoute200 */
-                            SceneInfo50()
-                            Spacer(Modifier.height(10.dp))
-                            OutlinedButton(onClick = { chatOpen = true }, modifier = Modifier.fillMaxWidth()) {
-                                Text("Открыть диалог с Хироном")
+                            Spacer(Modifier.height(12.dp))
+                            SummitCard300(prefs, done + historyRefresh)
+                            if (!prefs.getBoolean("visual_compact_300", false)) {
+                                Spacer(Modifier.height(10.dp))
+                                ChironPreview300(prefs, sleep, steps, done) { chatOpen = true }
+                            } else {
+                                OutlinedButton(onClick = { chatOpen = true }, modifier = Modifier.fillMaxWidth()) {
+                                    Text("Открыть диалог с Хироном")
+                                }
                             }
                             }
                         }
@@ -159,6 +146,7 @@ private fun BioAge(prefs: SharedPreferences) {
                             if (saved) Text("Данные сохранены", color = Aqua, fontSize = 12.sp)
                             Spacer(Modifier.height(8.dp))
                             Text("Показатели не являются медицинской оценкой.", color = Muted, fontSize = 12.sp)
+                            HealthSnapshot300(prefs, historyRefresh)
                             HealthDashboard100(prefs, historyRefresh)
                             SevenDayChart200(prefs, historyRefresh)
                             CompareWeeks200(prefs, historyRefresh)
@@ -221,13 +209,14 @@ private fun BioAge(prefs: SharedPreferences) {
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 2.00", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Alpha 3.00", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
                             LocalBackupPanel(prefs)
                             Diagnostics30(prefs)
                             DataAudit50(prefs)
                             CompactMode100(prefs)
+                            VisualSettings300(prefs)
                             ReleaseStatus100(prefs)
                             PrivacyAndQuality200(prefs)
                             ReleaseNotes70()
