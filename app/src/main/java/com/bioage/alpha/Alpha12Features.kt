@@ -105,7 +105,8 @@ fun LocalBackupPanel(prefs: SharedPreferences) {
                 val key = keys.next()
                 // Only import application-owned keys; do not overwrite migration metadata.
                 // Alpha 0.30 adds rest days (rest_<date>) and the step goal (goal_steps).
-                if (!(key in setOf("steps", "sleep", "mood", "goal_steps") || key.startsWith("day_") || key.startsWith("health_") || key.startsWith("rest_"))) continue
+                // Alpha 0.70 adds gentle mode (chiron_rest_mode_70) and weekly focus (weekly_focus_70_<monday>).
+                if (!(key in setOf("steps", "sleep", "mood", "goal_steps", "chiron_rest_mode_70") || key.startsWith("day_") || key.startsWith("health_") || key.startsWith("rest_") || key.startsWith("weekly_focus_"))) continue
                 when (val value = values.get(key)) {
                     is String -> edit.putString(key, value.take(1000))
                     is Boolean -> edit.putBoolean(key, value)
