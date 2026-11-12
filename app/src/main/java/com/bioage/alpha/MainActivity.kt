@@ -99,7 +99,7 @@ private fun BioAge(prefs: SharedPreferences) {
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 3.00", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  ALPHA 4.00", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
                 // Card area takes the space between header and tab bar; the card sits at its bottom
                 // and scrolls inside it, so the tab bar is never pushed off screen.
@@ -121,7 +121,8 @@ private fun BioAge(prefs: SharedPreferences) {
                             Spacer(Modifier.height(12.dp))
                             OrbitControl30(camera) { camera = it }
                             Spacer(Modifier.height(12.dp))
-                            SummitCard300(prefs, done + historyRefresh)
+                            AlpineRoute400(prefs, done + historyRefresh)
+                            MountainInfo400()
                             if (!prefs.getBoolean("visual_compact_300", false)) {
                                 Spacer(Modifier.height(10.dp))
                                 ChironPreview300(prefs, sleep, steps, done) { chatOpen = true }
@@ -209,7 +210,7 @@ private fun BioAge(prefs: SharedPreferences) {
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 3.00", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Alpha 4.00", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
                             LocalBackupPanel(prefs)
