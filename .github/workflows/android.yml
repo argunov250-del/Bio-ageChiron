@@ -32,7 +32,12 @@ jobs:
           BIOAGE_KEY_ALIAS: ${{ secrets.BIOAGE_KEY_ALIAS }}
         run: |
           set -euo pipefail
-          for name in BIOAGE_KEYSTORE_BASE64 BIOAGE_KEYSTORE_PASSWORD BIOAGE_KEY_PASSWORD BIOAGE_KEY_ALIAS; do
+          # Alias is not secret; for PKCS12 keystores the key password equals the store password.
+          # Only BIOAGE_KEYSTORE_BASE64 and BIOAGE_KEYSTORE_PASSWORD are required.
+          BIOAGE_KEY_ALIAS="${BIOAGE_KEY_ALIAS:-bioage}"
+          BIOAGE_KEY_PASSWORD="${BIOAGE_KEY_PASSWORD:-$BIOAGE_KEYSTORE_PASSWORD}"
+          export BIOAGE_KEY_PASSWORD
+          for name in BIOAGE_KEYSTORE_BASE64 BIOAGE_KEYSTORE_PASSWORD; do
             if [ -z "${!name}" ]; then echo "Missing GitHub Actions secret: $name" >&2; exit 1; fi
           done
           printf '%s' "$BIOAGE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/bioage-signing.jks"
