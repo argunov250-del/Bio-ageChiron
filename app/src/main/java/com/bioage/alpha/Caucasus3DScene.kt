@@ -20,12 +20,12 @@ import kotlin.math.sin
 fun Caucasus3DScene(cameraAngle: Float) {
     val engine = rememberEngine()
     val loader = rememberModelLoader(engine)
-    val cameraNode = rememberCameraNode(engine) { position = Position(x = 0f, y = 4.4f, z = 16.5f) }
+    val cameraNode = rememberCameraNode(engine) { position = Position(x = 0f, y = 4.4f, z = 19.5f) }
     val nodes = rememberNodes { add(ModelNode(modelInstance = loader.createModelInstance("models/elbrus_terrain.glb"))) }
     val smoothAngle by animateFloatAsState(targetValue = cameraAngle, animationSpec = tween(220), label = "camera-pan")
     LaunchedEffect(smoothAngle) {
         val radians = Math.toRadians(smoothAngle.toDouble() * 0.55)
-        val radius = 16.5
+        val radius = 19.5
         cameraNode.position = Position(x = (sin(radians)*radius).toFloat(), y = 4.4f, z = (cos(radians)*radius).toFloat())
         cameraNode.lookAt(Position(x = 0f, y = 0.55f, z = -1.2f))
     }

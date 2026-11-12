@@ -104,7 +104,8 @@ fun LocalBackupPanel(prefs: SharedPreferences) {
             while (keys.hasNext()) {
                 val key = keys.next()
                 // Only import application-owned keys; do not overwrite migration metadata.
-                if (!(key in setOf("steps", "sleep", "mood") || key.startsWith("day_") || key.startsWith("health_"))) continue
+                // Alpha 0.30 adds rest days (rest_<date>) and the step goal (goal_steps).
+                if (!(key in setOf("steps", "sleep", "mood", "goal_steps") || key.startsWith("day_") || key.startsWith("health_") || key.startsWith("rest_"))) continue
                 when (val value = values.get(key)) {
                     is String -> edit.putString(key, value.take(1000))
                     is Boolean -> edit.putBoolean(key, value)
