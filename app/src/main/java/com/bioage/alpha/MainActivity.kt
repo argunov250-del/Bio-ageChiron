@@ -99,13 +99,13 @@ private fun BioAge(prefs: SharedPreferences) {
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 4.00", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  ALPHA 5.00", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
                 // Card area takes the space between header and tab bar; the card sits at its bottom
                 // and scrolls inside it, so the tab bar is never pushed off screen.
                 BoxWithConstraints(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.BottomCenter) {
                 Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp)
-                    .then(if (tab == 0 && !chatOpen) Modifier.heightIn(max = maxHeight * 0.56f) else Modifier)
+                    .then(if (tab == 0 && !chatOpen) Modifier.heightIn(max = maxHeight * 0.47f) else Modifier)
                     .clip(RoundedCornerShape(28.dp)).background(Glass)
                     .verticalScroll(rememberScrollState()).padding(20.dp)) {
                     when (tab) {
@@ -117,20 +117,7 @@ private fun BioAge(prefs: SharedPreferences) {
                                 }
                                 ChironChat30(prefs, sleep, steps, mood, done)
                             } else {
-                            Hero300(steps, sleep, done)
-                            Spacer(Modifier.height(12.dp))
-                            OrbitControl30(camera) { camera = it }
-                            Spacer(Modifier.height(12.dp))
-                            AlpineRoute400(prefs, done + historyRefresh)
-                            MountainInfo400()
-                            if (!prefs.getBoolean("visual_compact_300", false)) {
-                                Spacer(Modifier.height(10.dp))
-                                ChironPreview300(prefs, sleep, steps, done) { chatOpen = true }
-                            } else {
-                                OutlinedButton(onClick = { chatOpen = true }, modifier = Modifier.fillMaxWidth()) {
-                                    Text("Открыть диалог с Хироном")
-                                }
-                            }
+                            Home500(prefs, steps, sleep, done, done + historyRefresh, camera, { camera = it }) { chatOpen = true }
                             }
                         }
                         1 -> {
@@ -147,25 +134,23 @@ private fun BioAge(prefs: SharedPreferences) {
                             if (saved) Text("Данные сохранены", color = Aqua, fontSize = 12.sp)
                             Spacer(Modifier.height(8.dp))
                             Text("Показатели не являются медицинской оценкой.", color = Muted, fontSize = 12.sp)
-                            HealthSnapshot300(prefs, historyRefresh)
-                            HealthDashboard100(prefs, historyRefresh)
-                            SevenDayChart200(prefs, historyRefresh)
-                            CompareWeeks200(prefs, historyRefresh)
-                            DataCoverage70(prefs, historyRefresh)
-                            if (!prefs.getBoolean("compact_health_100", true)) {
-                                Recovery30(prefs, historyRefresh)
-                            }
+                            Health500(prefs, historyRefresh)
                             Goals30(prefs, steps)
-                            ChironInsights50(prefs, historyRefresh)
-                            GentleMode70(prefs)
-                            ChironContext70(prefs, historyRefresh)
+                            Spacer(Modifier.height(10.dp))
                             ChironCoach200(prefs, historyRefresh)
-                            WeeklyReflection50(prefs)
                             Spacer(Modifier.height(12.dp))
                             OutlinedButton(onClick = { healthExpanded = !healthExpanded }, modifier = Modifier.fillMaxWidth()) {
                                 Text(if (healthExpanded) "Скрыть историю и графики" else "Показать историю и графики")
                             }
                             if (healthExpanded) {
+                                SevenDayChart200(prefs, historyRefresh)
+                                CompareWeeks200(prefs, historyRefresh)
+                                DataCoverage70(prefs, historyRefresh)
+                                Recovery30(prefs, historyRefresh)
+                                ChironInsights50(prefs, historyRefresh)
+                                GentleMode70(prefs)
+                                ChironContext70(prefs, historyRefresh)
+                                WeeklyReflection50(prefs)
                                 HealthHistoryPanel(prefs, historyRefresh)
                                 HealthTrendsPanel(prefs, historyRefresh)
                                 Analytics30(prefs, historyRefresh)
@@ -210,17 +195,11 @@ private fun BioAge(prefs: SharedPreferences) {
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 4.00", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Alpha 5.00", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
                             LocalBackupPanel(prefs)
-                            Diagnostics30(prefs)
-                            DataAudit50(prefs)
-                            CompactMode100(prefs)
-                            VisualSettings300(prefs)
-                            ReleaseStatus100(prefs)
-                            PrivacyAndQuality200(prefs)
-                            ReleaseNotes70()
+                            ProfileDiagnostics500(prefs)
                             Spacer(Modifier.height(12.dp))
                             Text("3D-Кавказ работает локально. Health Connect и медицинский расчёт биологического возраста пока не подключены.", color = Muted, fontSize = 13.sp, lineHeight = 20.sp)
                         }
