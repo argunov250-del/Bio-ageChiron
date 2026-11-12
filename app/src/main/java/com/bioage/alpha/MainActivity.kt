@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -88,6 +89,7 @@ private fun BioAge(prefs: SharedPreferences) {
     var habits by remember { mutableStateOf((0..2).map { prefs.getBoolean("day_${today}_habit_$it", false) }) }
     val done = habits.count { it }
     val colors = darkColorScheme(primary = Aqua, onPrimary = Deep, background = Deep, surface = Deep, onSurface = Ink, onSurfaceVariant = Muted, outline = Muted)
+    BackHandler(enabled = tab != 0) { tab = 0 }
     MaterialTheme(colorScheme = colors) {
         Box(Modifier.fillMaxSize().background(Deep)) {
             Caucasus3DScene(camera)
@@ -113,7 +115,7 @@ private fun BioAge(prefs: SharedPreferences) {
                                 Metric("ПРИВЫЧКИ", "$done/3", Modifier.weight(1f))
                             }
                             Spacer(Modifier.height(14.dp))
-                            Text("Панорама  ·  ${camera.roundToInt()}°", color = Muted, fontSize = 12.sp)
+                            Text("Поворот камеры  ·  ${camera.roundToInt()}°", color = Muted, fontSize = 12.sp)
                             Slider(value = camera, onValueChange = { camera = it }, valueRange = -45f..45f, modifier = Modifier.fillMaxWidth(), colors = SliderDefaults.colors(thumbColor = Aqua, activeTrackColor = Aqua, inactiveTrackColor = Color(0xFF496677)))
                             Spacer(Modifier.height(6.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {

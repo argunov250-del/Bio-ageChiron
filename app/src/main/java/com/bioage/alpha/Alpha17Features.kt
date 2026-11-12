@@ -25,6 +25,8 @@ fun HealthTrendsPanel(prefs: SharedPreferences, refresh: Int) {
     } else {
         if (steps.isNotEmpty()) Text("Шаги: в среднем ${steps.average().toInt()} за ${steps.size} дн.", color = Color.White)
         if (sleep.isNotEmpty()) Text("Сон: в среднем ${String.format(Locale.getDefault(), "%.1f", sleep.average())} ч за ${sleep.size} дн.", color = Color.White)
+        val recent7 = dates.take(7).mapNotNull { prefs.getString("health_${it}_steps", null)?.toIntOrNull()?.takeIf { n -> n >= 0 } }
+        if (recent7.isNotEmpty()) Text("Последние 7 дней: в среднем ${recent7.average().toInt()} шагов (${recent7.size} записей)", color = Color(0xFFB5F0E7))
     }
 }
 
