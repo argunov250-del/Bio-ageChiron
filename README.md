@@ -1,31 +1,21 @@
-# Bio-Age Alpha 0.1 — исходный Android-проект
+# Bio-ageChiron Alpha 0.2
 
-## Что реально реализовано
-- Kotlin + Jetpack Compose, четыре экрана.
-- Локальное сохранение введённых шагов, часов сна, самочувствия и трёх флажков привычек через SharedPreferences.
-- Правила Хирона без нейросети и медицинских диагнозов.
-- Облегчённый процедурный горный фон с управлением смещением камеры, без внешних ассетов и интернета.
-- Русский интерфейс и адаптивная компоновка.
+Android Kotlin + Jetpack Compose, offline-first prototype.
 
-## Чего ещё нет
-- SceneView/Filament и настоящего 3D: **ещё не интегрированы**. Горный фон пока рисуется Compose Canvas и служит временной сценой.
-- Исторической базы Room, графиков по датам, импорта Health Connect, биологического возраста, бэкапов, уведомлений и полноценного Liquid Glass.
-- APK собирается автоматически в GitHub Actions (workflow `Build Bio-Age Android APK`, артефакт `Bio-ageChiron-Alpha-APK`).
+## Changes since 0.1
+- Readable light-on-dark glass-like cards and compact dashboard.
+- Improved procedural **2D** alpine landscape (not actual 3D/Filament).
+- Daily habits stored with date keys and a seven-day activity strip.
+- Four tabs, local health entries, rules-based Chiron and camera slider.
+- Preserves the same applicationId and SharedPreferences file as 0.1.
 
-## Как собрать APK
-1. Открыть папку BioAgeAlpha в Android Studio (JDK 17 или 21).
-2. Установить Android SDK Platform 35 и Build Tools через SDK Manager.
-3. Дождаться Gradle Sync. Если Android Studio предложит установить Gradle, согласиться.
-4. Выбрать Build > Build Bundle(s) / APK(s) > Build APK(s).
-5. Найти app/build/outputs/apk/debug/app-debug.apk и установить на Android 8.0+.
+## Build
+GitHub Actions > Build Bio-Age Android APK > latest successful run > Artifacts > Bio-ageChiron-Alpha-APK.
+GitHub Actions runs `./gradlew :app:assembleDebug` (Gradle wrapper 8.9, JDK 17, Android SDK 35).
+The APK is a debug build; install only from your own trusted repository.
 
-В проект добавлен Gradle wrapper 8.9: сборка из командной строки — `./gradlew :app:assembleDebug`. Версии зависимостей требуют доступа к Google Maven/Maven Central при первой синхронизации.
+## Limitations
+Not a medical product. No validated biological age, no Health Connect, no 3D, no real background blur, no sync. Build status is verified by GitHub Actions.
 
-## Следующие шаги
-1. Стабилизировать сборку на реальном Android и исправить выявленные ошибки.
-2. Выделить интерфейс, health, Chiron и world в отдельные Gradle-модули.
-3. Подключить SceneView + Filament и оптимизированную 3D-модель Эльбруса.
-4. Перейти с SharedPreferences на Room, добавить даты, историю и графики.
-5. По разрешению пользователя подключить Health Connect.
-
-Этот прототип — первая кодовая основа, не финальная реализация всех согласованных 170 решений.
+## Upgrade from 0.1
+Steps, sleep and mood entries keep their keys. Undated 0.1 habit marks are migrated once to today's date on first launch.
