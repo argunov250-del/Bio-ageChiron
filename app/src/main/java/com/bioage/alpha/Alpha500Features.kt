@@ -88,3 +88,24 @@ fun ProfileDiagnostics500(prefs: SharedPreferences) {
         }
     }
 }
+
+
+/** Alpha 6.00: the landscape moves automatically. No camera buttons or gestures. */
+@Composable
+fun Home600(prefs: SharedPreferences, steps: String, sleep: String, done: Int, refresh: Int, onChat: () -> Unit) {
+    Hero300(steps, sleep, done)
+    Spacer(Modifier.height(12.dp))
+    AlpineRoute400(prefs, refresh)
+    Spacer(Modifier.height(10.dp))
+    GlassPanel300(Modifier.fillMaxWidth()) {
+        Text("ХИРОН · СЕГОДНЯ", color = ice500, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+        val hours = sleep.replace(',', '.').toDoubleOrNull()
+        val message = when {
+            hours != null && hours < 6.0 -> "Сон был коротким. Выбирай комфортный темп и время для отдыха."
+            done == 3 -> "Все три привычки отмечены. Восстановление — тоже часть прогресса."
+            else -> "Записывай сон и движение, чтобы замечать изменения со временем."
+        }
+        Text(message, color = ink500, fontSize = 13.sp, lineHeight = 19.sp)
+        OutlinedButton(onClick = onChat, modifier = Modifier.fillMaxWidth()) { Text("Диалог с Хироном") }
+    }
+}
