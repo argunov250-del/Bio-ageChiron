@@ -1,8 +1,6 @@
 name: Build Bio-Age Android APK
 on:
   push:
-    branches: ['**']
-  pull_request:
     branches: [main]
   workflow_dispatch:
 permissions:
@@ -16,18 +14,57 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Install Android 35 (preinstalled SDK on runner)
+      - name: Install Android SDK
         run: |
           SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
           yes | "$SDKM" --licenses > /dev/null || true
           "$SDKM" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
       - uses: gradle/actions/setup-gradle@v4
-      - name: Build APK
+      - name: Build debug APK
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon :app:assembleDebug
+      - name: Sign with persistent Bio-Age key
+        env:
+          BIOAGE_KEYSTORE_BASE64: ${{ secrets.BIOAGE_KEYSTORE_BASE64 }}
+          BIOAGE_KEYSTORE_PASSWORD: ${{ secrets.BIOAGE_KEYSTORE_PASSWORD }}
+          BIOAGE_KEY_PASSWORD: ${{ secrets.BIOAGE_KEY_PASSWORD }}
+          BIOAGE_KEY_ALIAS: ${{ secrets.BIOAGE_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          for name in BIOAGE_KEYSTORE_BASE64 BIOAGE_KEYSTORE_PASSWORD BIOAGE_KEY_PASSWORD BIOAGE_KEY_ALIAS; do
+            if [ -z "${!name}" ]; then echo "Missing GitHub Actions secret: $name" >&2; exit 1; fi
+          done
+          printf '%s' "$BIOAGE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/bioage-signing.jks"
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign \
+            --ks "$RUNNER_TEMP/bioage-signing.jks" \
+            --ks-key-alias "$BIOAGE_KEY_ALIAS" \
+            --ks-pass env:BIOAGE_KEYSTORE_PASSWORD \
+            --key-pass env:BIOAGE_KEY_PASSWORD \
+            --out "$RUNNER_TEMP/app-signed.apk" "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$RUNNER_TEMP/app-signed.apk"
+          mv "$RUNNER_TEMP/app-signed.apk" "$APK"
+          rm -f "$RUNNER_TEMP/bioage-signing.jks"
+      - name: Verify persistent signature and version
+        env:
+          # Public SHA-256 fingerprint of the Bio-Age signing certificate (not a secret).
+          # Every release must carry this exact certificate, otherwise Android refuses
+          # to install it over the existing app.
+          EXPECTED_CERT_SHA256: fb3c94e6f2da51403b0812772d4e9f6187aea4bc2e00408913d4bd329d7697ac
+        run: |
+          set -euo pipefail
+          APK="app/build/outputs/apk/debug/app-debug.apk"
+          CERTS=$("$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs "$APK")
+          echo "$CERTS" | grep -E "Signer #1 certificate (DN|SHA-256)"
+          ACTUAL=$(echo "$CERTS" | sed -n 's/^Signer #1 certificate SHA-256 digest: //p')
+          if [ "$(echo "$CERTS" | grep -cE '^Signer #[0-9]+ certificate SHA-256')" -ne 1 ]; then echo "Expected exactly one signer" >&2; exit 1; fi
+          if [ "$ACTUAL" != "$EXPECTED_CERT_SHA256" ]; then
+            echo "Signing certificate mismatch: got $ACTUAL, expected $EXPECTED_CERT_SHA256" >&2; exit 1
+          fi
+          "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging "$APK" | grep -E "^package:"
       - uses: actions/upload-artifact@v4
         with:
-          name: Bio-ageChiron-Alpha-APK
+          name: Bio-ageChiron-Alpha-0.5-signed-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
