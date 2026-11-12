@@ -98,7 +98,7 @@ private fun BioAge(prefs: SharedPreferences) {
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 6.10", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  ALPHA 6.20", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
                 // Card area takes the space between header and tab bar; the card sits at its bottom
                 // and scrolls inside it, so the tab bar is never pushed off screen.
@@ -114,6 +114,8 @@ private fun BioAge(prefs: SharedPreferences) {
                                     TextButton(onClick = { chatOpen = false }) { Text("← Назад") }
                                     Text("Хирон · диалог", color = Ink, fontSize = 20.sp)
                                 }
+                                ChironPresence620(prefs, historyRefresh)
+                                Spacer(Modifier.height(16.dp))
                                 ChironChat30(prefs, sleep, steps, mood, done)
                             } else {
                             Home600(prefs, steps, sleep, done, done + historyRefresh) { chatOpen = true }
@@ -133,6 +135,8 @@ private fun BioAge(prefs: SharedPreferences) {
                             if (saved) Text("Данные сохранены", color = Aqua, fontSize = 12.sp)
                             Spacer(Modifier.height(8.dp))
                             Text("Показатели не являются медицинской оценкой.", color = Muted, fontSize = 12.sp)
+                            Wellness620(prefs, historyRefresh)
+                            Spacer(Modifier.height(12.dp))
                             Health500(prefs, historyRefresh)
                             Goals30(prefs, steps)
                             Spacer(Modifier.height(10.dp))
@@ -194,7 +198,7 @@ private fun BioAge(prefs: SharedPreferences) {
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 6.10", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Alpha 6.20", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
                             LocalBackupPanel(prefs)
