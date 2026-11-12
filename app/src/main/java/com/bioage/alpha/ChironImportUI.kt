@@ -46,10 +46,10 @@ fun ChironDataCenter(prefs:SharedPreferences) {
         Text(if(busy)"Импорт выполняется…" else "Импортировать Apple Health ZIP")
     }
     Text(status,style=MaterialTheme.typography.bodySmall)
-    val count=remember(imported) { ChironStore(context).use{it.totalRows()} }
+    val count=remember(imported) { m1WithStore(context) { it.totalRows() } }  // no .use: SQLiteOpenHelper is AutoCloseable only from API 29
     Text("Записей в локальной базе: $count")
     val today=LocalDate.now().toString()
-    val todayData=remember(imported) { ChironStore(context).use { db ->
+    val todayData=remember(imported) { m1WithStore(context) { db ->
         Triple(db.daily(today,"hrv_sdnn"),db.daily(today,"resting_hr"),db.daily(today,"heart_rate"))
     } }
     Text("Сегодня: HRV ${todayData.first.size}, пульс покоя ${todayData.second.size}, пульс ${todayData.third.size}")

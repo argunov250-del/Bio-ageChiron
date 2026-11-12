@@ -1,22 +1,173 @@
-<!doctype html><html lang="ru"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/><style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:linear-gradient(#6b90a5 0%,#b7c6cc 45%,#d1d6d3 70%,#6e8e9b 100%)}canvas{display:block;width:100%;height:100%;touch-action:none}#haze{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(30,63,81,.06),transparent 30%,rgba(180,202,207,.06) 60%,rgba(13,35,52,.30) 100%)}
-</style></head><body><div id="haze"></div><svg id="alpine-ridge" viewBox="0 0 1000 900" preserveAspectRatio="xMidYMid slice" style="position:absolute;left:0;top:18%;width:100%;height:76%;pointer-events:none;opacity:.94" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="snow" x2="0" y2="1"><stop stop-color="#f5f8f6"/><stop offset=".56" stop-color="#b2c8d0"/><stop offset="1" stop-color="#537488"/></linearGradient><linearGradient id="fog" x2="0" y2="1"><stop stop-color="#91b1bd" stop-opacity="0"/><stop offset="1" stop-color="#122f42" stop-opacity=".8"/></linearGradient></defs><path fill="#a3bdc9" d="M0 620L85 530 150 560 255 400 345 535 480 320 610 520 735 355 875 540 1000 445V900H0Z"/><path fill="url(#snow)" d="M0 750L130 625 210 670 355 360 415 490 520 585 650 305 715 435 790 515 905 400 1000 570V900H0Z"/><path fill="#e9f0ef" d="M280 465L355 360 415 490 374 459 351 438 330 476Z M590 420L650 305 715 435 672 408 647 380 625 427Z"/><path fill="#456b7e" d="M0 770L130 700 270 775 430 685 550 790 710 685 850 750 1000 680V900H0Z"/><path fill="url(#fog)" d="M0 550H1000V900H0Z"/></svg><script src="three.min.js"></script><script>
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#061521}
+/* Dusk sky lives in CSS: it is visible even when WebGL is unavailable. */
+#sky{position:absolute;left:0;top:0;width:100%;height:100%;
+  background:
+    radial-gradient(ellipse 70% 34% at 24% 33%,rgba(255,196,140,.62) 0%,rgba(244,150,110,.26) 38%,rgba(120,110,150,0) 72%),
+    linear-gradient(180deg,#06131f 0%,#0c2238 13%,#1b3b5c 24%,#44608a 32%,#7d84a2 38%,#2a4160 42%,#0b1d2c 47%,#061521 100%)}
+canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block;touch-action:none}
+</style>
+</head>
+<body>
+<div id="sky"></div>
+<script src="three.min.js"></script>
+<script>
+/* Bio-Age Chiron, Major 1 mountain scene.
+   Stylised procedural twin-summit massif inspired by Elbrus. It is NOT a survey-accurate model.
+   One slow automatic camera; no touch input. Kotlin talks to the page through window.bioage.set(). */
 (function(){'use strict';
-if(typeof THREE==='undefined'){return;} // CSS sky fallback when dependency is absent
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x87a7b6);scene.fog=new THREE.FogExp2(0x9db4be,0.010);
-const camera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,0.1,260);
-const renderer=new THREE.WebGLRenderer({alpha:false,antialias:false,powerPreference:'low-power'});
-renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;document.body.insertBefore(renderer.domElement,document.body.firstChild);
-scene.add(new THREE.HemisphereLight(0xe9f4ff,0x4b6170,2.1));const sun=new THREE.DirectionalLight(0xffe4c7,2.0);sun.position.set(-25,35,18);scene.add(sun);
-// Procedural alpine relief: lightweight temporary scenery, not the final Elbrus model.
-function relief(x,z,layer){const left=8.0*Math.exp(-Math.pow((x+8)/8,2));const right=10.0*Math.exp(-Math.pow((x-9)/7,2));const ridge=2.3*Math.exp(-Math.pow(x/16,2));const serration=(Math.sin(x*.9+z*.15)*.38+Math.sin(x*1.8-z*.22)*.18);const depth=1-.018*Math.abs(z);return Math.max(-1,(left+right+ridge+serration)*depth+layer);}
-function mountain(offset,depth,color){const nx=100,nz=28,w=68,d=30;const pos=[],indices=[],colors=[];const stone=new THREE.Color(color);for(let j=0;j<=nz;j++){const z=-j*d/nz;for(let i=0;i<=nx;i++){const x=(i/nx-.5)*w;const y=relief(x,z,offset)+Math.sin(x*2.7+z*1.3)*.13;pos.push(x,y,z-depth);const snow=Math.max(0,Math.min(1,(y-(4+offset))*.42));const c=stone.clone().lerp(new THREE.Color(0xe7ebeb),snow);const rock=1-.13*Math.abs(Math.sin(x*1.3+z*2.1));c.multiplyScalar(rock);colors.push(c.r,c.g,c.b);}}
-for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const a=j*(nx+1)+i,b=a+nx+1;indices.push(a,b,a+1,b,b+1,a+1);}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));g.setIndex(indices);g.computeVertexNormals();scene.add(new THREE.Mesh(g,new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide})));}
-mountain(-3,37,0x758a94);mountain(-1.5,21,0x687d86);mountain(0,5,0x485a62);
-const clock=new THREE.Clock();let frame=0;let visible=true;document.addEventListener('visibilitychange',()=>{visible=!document.hidden;if(visible)requestAnimationFrame(draw);});
-/* Framing (Claude, 6.10): centred between the two front summits (x -6.2 and 8.3) and 4 units further back,
-   so both stay on screen on tall 9:20 phones; drift amplitude/speed unchanged. */
-function draw(){if(!visible)return;const t=clock.getElapsedTime();camera.position.set(1.05+Math.sin(t*.045)*.85,11.6+Math.sin(t*.03)*.14,46);camera.lookAt(1.05,4.6,-13);renderer.render(scene,camera);frame++;requestAnimationFrame(draw);}
-function resize(){camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);}window.addEventListener('resize',resize);resize();draw();
+var state={mode:'home',progress:0};
+var api={status:'starting',set:function(mode,progress){state.mode=mode;state.progress=Math.max(0,Math.min(1,+progress||0));if(api.onState)api.onState();}};
+window.bioage=api;
+
+/* ---------- deterministic terrain shared by WebGL and the 2D fallback ---------- */
+function hash(ix,iz){var n=Math.sin(ix*127.1+iz*311.7)*43758.5453;return n-Math.floor(n);}
+function vnoise(x,z){var ix=Math.floor(x),iz=Math.floor(z),fx=x-ix,fz=z-iz;
+  var ux=fx*fx*(3-2*fx),uz=fz*fz*(3-2*fz);
+  var a=hash(ix,iz),b=hash(ix+1,iz),c=hash(ix,iz+1),d=hash(ix+1,iz+1);
+  return a+(b-a)*ux+(c-a)*uz+(a-b-c+d)*ux*uz;}
+function fbm(x,z,oct){var s=0,a=.5,f=1;for(var i=0;i<oct;i++){s+=a*vnoise(x*f,z*f);a*=.5;f*=2.03;}return s;}
+function ridged(x,z,oct){var s=0,a=.5,f=1;for(var i=0;i<oct;i++){var n=1-Math.abs(2*vnoise(x*f,z*f)-1);s+=a*n*n;a*=.5;f*=2.07;}return s;}
+function sstep(a,b,x){var t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t);}
+function dome(x,z,cx,cz,h,s){var d2=((x-cx)*(x-cx)+(z-cz)*(z-cz))/(s*s);return h/Math.pow(1+d2,1.15);}
+var WEST={x:-3.3,z:0,h:12.4},EAST={x:3.7,z:-1.0,h:11.5};
+function height(x,z){
+  var a=dome(x,z,WEST.x,WEST.z,WEST.h,5.2),b=dome(x,z,EAST.x,EAST.z,EAST.h,4.9);
+  var massif=Math.max(a,b)+.28*Math.min(a,b);
+  var rough=ridged(x*.16+3.1,z*.16+7.7,5);
+  var cx=a>b?WEST.x:EAST.x,cz=a>b?WEST.z:EAST.z,r=Math.sqrt((x-cx)*(x-cx)+(z-cz)*(z-cz)),ang=Math.atan2(z-cz,x-cx);
+  var spur=(ridged(ang*2.3+(a>b?1.7:5.2),r*.22+3,3)-.38)*2.6*sstep(.8,5.5,r)*(1-sstep(9,17,r));
+  var flank=((rough-.35)*4.4+spur)*(1-sstep(10.6,12.3,massif))*sstep(.4,3,massif);
+  var side=sstep(9,22,Math.abs(x))*(2.2+6.2*ridged(x*.085+11,z*.085+2,5))*(1-sstep(8,26,z));
+  var back=sstep(-6,-20,z)*(3+5*ridged(x*.07+5,z*.07+9,4));
+  var front=sstep(13,24,z)*(1.2+3.6*ridged(x*.12+21,z*.12+4,5))*(1-sstep(30,40,z)*.6);
+  var micro=(fbm(x*.9,z*.9,3)-.5)*.5*(1-sstep(9,12,massif));
+  return Math.max(massif+flank,side,back,front)+micro-sstep(8,14,z)*(1-sstep(14,22,z))*1.4;
+}
+
+/* ---------- 2D fallback: layered ridges drawn from the same height function ---------- */
+function fallback2D(reason){
+  api.status='2d:'+reason;
+  var old=document.querySelectorAll('canvas');for(var i=0;i<old.length;i++)old[i].parentNode.removeChild(old[i]);
+  var c=document.createElement('canvas');document.body.appendChild(c);
+  function paint(){
+    var w=window.innerWidth||document.documentElement.clientWidth,h=window.innerHeight||document.documentElement.clientHeight;
+    if(!w||!h){setTimeout(paint,120);return;}
+    var dpr=Math.min(window.devicePixelRatio||1,2);c.width=w*dpr;c.height=h*dpr;var g=c.getContext('2d');if(!g)return;g.scale(dpr,dpr);
+    var prog=state.mode==='progress';var baseY=h*(prog?.37:.5),unit=h*(prog?.019:.0235),span=prog?30:22;
+    var layers=[[-16,'#7f8fae','#aab6cf',.75],[-7,'#566b8c','#dfe7f2',.9],[0,'#2c3d52','#f4f8fb',1],[9,'#1a2a3b','#c9d6e3',1],[21,'#0c1b2a','#0c1b2a',1]];
+    for(var L=0;L<layers.length;L++){var z=layers[L][0],pts=[],top=h;
+      for(var px=0;px<=w;px+=3){var x=(px/w-.5)*span;var y=baseY-height(x,z)*unit*layers[L][3]+L*h*.012;pts.push([px,y]);if(y<top)top=y;}
+      var grad=g.createLinearGradient(0,top,0,baseY+h*.08);grad.addColorStop(0,layers[L][2]);grad.addColorStop(.55,layers[L][1]);grad.addColorStop(1,'#0a1b2b');
+      g.fillStyle=grad;g.beginPath();g.moveTo(0,h);for(var k=0;k<pts.length;k++)g.lineTo(pts[k][0],pts[k][1]);g.lineTo(w,h);g.closePath();g.fill();}
+    var fade=g.createLinearGradient(0,baseY-h*.02,0,baseY+h*.2);fade.addColorStop(0,'rgba(6,21,33,0)');fade.addColorStop(1,'rgba(6,21,33,1)');
+    g.fillStyle=fade;g.fillRect(0,baseY-h*.02,w,h);
+  }
+  api.onState=paint;window.addEventListener('resize',paint);paint();
+}
+
+if(typeof THREE==='undefined'){fallback2D('no-three');return;}
+try{
+  var probe=document.createElement('canvas');
+  if(!(probe.getContext('webgl2')||probe.getContext('webgl')||probe.getContext('experimental-webgl'))){fallback2D('no-webgl');return;}
+  var renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'});
+  renderer.setClearColor(0x000000,0);
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  document.body.appendChild(renderer.domElement);
+  renderer.domElement.addEventListener('webglcontextlost',function(e){e.preventDefault();running=false;fallback2D('context-lost');});
+
+  var scene=new THREE.Scene();
+  var HAZE=0x7d8fae;
+  scene.fog=new THREE.Fog(HAZE,74,190);
+  var camera=new THREE.PerspectiveCamera(38,1,0.5,260);
+  scene.add(new THREE.HemisphereLight(0x9dbbe6,0x16222f,.85));
+  var sun=new THREE.DirectionalLight(0xffd9b4,1.75);sun.position.set(-40,24,26);scene.add(sun);
+
+  /* terrain */
+  var W=96,D=64,NX=230,NZ=150,Z0=-24;
+  var geo=new THREE.PlaneGeometry(W,D,NX,NZ);geo.rotateX(-Math.PI/2);geo.translate(0,0,Z0+D/2);
+  var pos=geo.attributes.position;
+  for(var i=0;i<pos.count;i++){pos.setY(i,height(pos.getX(i),pos.getZ(i)));}
+  geo.computeVertexNormals();
+  var nor=geo.attributes.normal,col=new Float32Array(pos.count*3);
+  var cSnow=new THREE.Color(0xf7fafc),cSnowShade=new THREE.Color(0xc5d6e8),cRock=new THREE.Color(0x2e3947),cRock2=new THREE.Color(0x4b4a54),cLow=new THREE.Color(0x0f1e2c),tmp=new THREE.Color();
+  for(i=0;i<pos.count;i++){
+    var x=pos.getX(i),y=pos.getY(i),z=pos.getZ(i),ny=nor.getY(i);
+    var n1=fbm(x*.35+40,z*.35+13,4),n2=fbm(x*1.7,z*1.7,2);
+    var line=4.4+n1*2.6+sstep(10,24,z)*3.5;
+    var snow=sstep(line-1.1,line+1.3,y)*sstep(.50,.74,ny+n2*.12)+sstep(9.2,10.6,y);
+    snow=Math.max(0,Math.min(1,snow));
+    tmp.copy(cRock).lerp(cRock2,n1).lerp(cLow,1-sstep(.2,3.4,y));
+    var rockDark=(.74+.26*n2)*(1-.6*sstep(11,25,z));tmp.multiplyScalar(rockDark);
+    var sc=cSnow.clone().lerp(cSnowShade,sstep(.9,.62,ny)*.6+(.5-n2)*.12);
+    tmp.lerp(sc,snow);
+    col[i*3]=tmp.r;col[i*3+1]=tmp.g;col[i*3+2]=tmp.b;
+  }
+  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+  scene.add(new THREE.Mesh(geo,new THREE.MeshLambertMaterial({vertexColors:true})));
+
+  /* soft sprites: clouds and trail markers */
+  function blob(inner,outer){var c=document.createElement('canvas');c.width=c.height=128;var g=c.getContext('2d');
+    var r=g.createRadialGradient(64,64,2,64,64,62);r.addColorStop(0,inner);r.addColorStop(.45,outer);r.addColorStop(1,'rgba(255,255,255,0)');
+    g.fillStyle=r;g.fillRect(0,0,128,128);var t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}
+  var cloudTex=blob('rgba(255,246,238,.85)','rgba(214,222,238,.34)');
+  var clouds=[];
+  var CL=[[-15,1.9,10,26,6,.62],[8,1.4,12,30,6.5,.58],[-3,.9,14,34,6,.52],[19,2.8,6,24,5.5,.5],[-24,3.4,2,26,6,.46],[2,4.6,-10,34,7,.34],[-12,6.2,-14,28,6,.3],[15,5.6,-13,26,6,.3],[29,1.8,13,26,5.5,.5],[-31,1.6,14,28,6,.5],[0,.4,19,40,5,.4]];
+  for(i=0;i<CL.length;i++){var m=new THREE.SpriteMaterial({map:cloudTex,transparent:true,opacity:CL[i][5],depthWrite:false,fog:false});
+    var s=new THREE.Sprite(m);s.position.set(CL[i][0],CL[i][1],CL[i][2]);s.scale.set(CL[i][3],CL[i][4],1);s.userData.v=.10+.06*hash(i,7);scene.add(s);clouds.push(s);}
+
+  /* ascent trail: base camp to the west summit, lives on the 3D surface */
+  var trail=new THREE.Group();trail.visible=false;scene.add(trail);
+  var dotTex=blob('rgba(255,255,255,1)','rgba(103,230,205,.55)');
+  var START={x:6.6,z:12.6},DOTS=64,dots=[],marks=[],STAGES=[0,30/270,90/270,180/270,1];
+  function trailPoint(t){var e=1-Math.pow(1-t,1.25);var x=START.x+(WEST.x-START.x)*e+Math.sin(t*Math.PI)*2.3-Math.sin(t*Math.PI*2)*.7;var z=START.z+(WEST.z+.25-START.z)*e;return new THREE.Vector3(x,height(x,z)+.22,z);}
+  for(i=0;i<=DOTS;i++){var dm=new THREE.SpriteMaterial({map:dotTex,transparent:true,depthTest:false,depthWrite:false,fog:false});var d=new THREE.Sprite(dm);d.position.copy(trailPoint(i/DOTS));d.userData.t=i/DOTS;trail.add(d);dots.push(d);}
+  for(i=0;i<STAGES.length;i++){var mm=new THREE.SpriteMaterial({map:dotTex,transparent:true,depthTest:false,depthWrite:false,fog:false});var w=new THREE.Sprite(mm);w.position.copy(trailPoint(STAGES[i]));w.userData.t=STAGES[i];trail.add(w);marks.push(w);}
+  var trailAlpha=0;
+  function styleTrail(){
+    var p=state.progress;
+    for(var k=0;k<dots.length;k++){var on=dots[k].userData.t<=p+1e-6;dots[k].material.opacity=(on?.95:.5)*trailAlpha;dots[k].material.color.setHex(on?0x8ff5e0:0xdfe9f2);var sz=on?.52:.3;dots[k].scale.set(sz,sz,1);}
+    for(k=0;k<marks.length;k++){var hit=marks[k].userData.t<=p+1e-6;marks[k].material.opacity=(hit?1:.62)*trailAlpha;marks[k].material.color.setHex(hit?0x67e6cd:0xffffff);var ms=hit?1.9:1.15;marks[k].scale.set(ms,ms,1);}
+    trail.visible=trailAlpha>.01;
+  }
+  api.onState=function(){};
+
+  /* camera presets per screen; values are eased, never jumped */
+  var PRESET={home:{z:74,y:9,ly:-3.4,fov:38},progress:{z:77,y:9,ly:-10.3,fov:46},dim:{z:74,y:9,ly:-3.4,fov:38}};
+  var cur={z:74,y:9,ly:-3.4,fov:38};
+  var vw=0,vh=0,running=true,last=0,t=0;
+  function fit(){
+    var w=window.innerWidth||document.documentElement.clientWidth,h=window.innerHeight||document.documentElement.clientHeight;
+    if(!w||!h)return false;                      /* WebView not laid out yet: try again next frame */
+    if(w!==vw||h!==vh){vw=w;vh=h;renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.6));renderer.setSize(w,h,false);camera.aspect=w/h;}
+    return true;
+  }
+  function frame(now){
+    if(!running)return;
+    requestAnimationFrame(frame);
+    if(document.hidden||!fit())return;
+    var dt=Math.min(.05,(now-last)/1000||0.016);last=now;t+=dt;
+    var target=PRESET[state.mode]||PRESET.home,k=1-Math.exp(-dt*2.4);
+    cur.z+=(target.z-cur.z)*k;cur.y+=(target.y-cur.y)*k;cur.ly+=(target.ly-cur.ly)*k;cur.fov+=(target.fov-cur.fov)*k;
+    /* wide screens (tablets, landscape) need less zoom-out than tall phones */
+    camera.fov=camera.aspect>.8?cur.fov*.7:cur.fov;
+    camera.updateProjectionMatrix();
+    camera.position.set(Math.sin(t*.05)*2.6,cur.y+Math.sin(t*.033)*.25,cur.z);
+    camera.lookAt(Math.sin(t*.05)*.5,cur.ly,0);
+    for(var c=0;c<clouds.length;c++){var s=clouds[c];s.position.x+=s.userData.v*dt;if(s.position.x>46)s.position.x=-46;}
+    var wantTrail=state.mode==='progress'?1:0;trailAlpha+=(wantTrail-trailAlpha)*Math.min(1,dt*3);styleTrail();
+    renderer.render(scene,camera);
+    if(api.status!=='webgl')api.status='webgl';
+  }
+  window.addEventListener('resize',function(){vw=0;});
+  requestAnimationFrame(frame);
+}catch(err){fallback2D('error:'+(err&&err.message?err.message:err));}
 })();
-</script></body></html>
+</script>
+</body>
+</html>
