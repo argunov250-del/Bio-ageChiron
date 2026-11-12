@@ -10,7 +10,7 @@
 ## Чего ещё нет
 - SceneView/Filament и настоящего 3D: **ещё не интегрированы**. Горный фон пока рисуется Compose Canvas и служит временной сценой.
 - Исторической базы Room, графиков по датам, импорта Health Connect, биологического возраста, бэкапов, уведомлений и полноценного Liquid Glass.
-- APK в этом архиве: среда генерации не содержит Android SDK/Gradle, поэтому сборка не выполнена.
+- APK собирается автоматически в GitHub Actions (workflow `Build Bio-Age Android APK`, артефакт `Bio-ageChiron-Alpha-APK`).
 
 ## Как собрать APK
 1. Открыть папку BioAgeAlpha в Android Studio (JDK 17 или 21).
@@ -19,7 +19,7 @@
 4. Выбрать Build > Build Bundle(s) / APK(s) > Build APK(s).
 5. Найти app/build/outputs/apk/debug/app-debug.apk и установить на Android 8.0+.
 
-В проекте не приложен Gradle wrapper: Android Studio может предложить его создать/настроить; для воспроизводимой сборки используйте Gradle 8.9 (`gradle wrapper --gradle-version 8.9`). Версии зависимостей требуют доступа к Google Maven/Maven Central при первой синхронизации.
+В проект добавлен Gradle wrapper 8.9: сборка из командной строки — `./gradlew :app:assembleDebug`. Версии зависимостей требуют доступа к Google Maven/Maven Central при первой синхронизации.
 
 ## Следующие шаги
 1. Стабилизировать сборку на реальном Android и исправить выявленные ошибки.
