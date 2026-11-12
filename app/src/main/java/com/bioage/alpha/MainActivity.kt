@@ -90,11 +90,11 @@ private fun BioAge(prefs: SharedPreferences) {
     MaterialTheme(colorScheme = colors) {
         Box(Modifier.fillMaxSize().background(Deep)) {
             Caucasus3DScene(camera)
-            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0x77051728), Color.Transparent, Color(0xD9081927)), startY = 0f)))
+            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0x65051728), Color.Transparent, Color(0xC9081927)), startY = 0f)))
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 0.4", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  ALPHA 0.6", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
                 Spacer(Modifier.weight(1f))
                 Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp).clip(RoundedCornerShape(28.dp)).background(Glass).verticalScroll(rememberScrollState()).padding(20.dp)) {
@@ -172,7 +172,7 @@ private fun BioAge(prefs: SharedPreferences) {
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 0.4", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Alpha 0.6", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
                             Spacer(Modifier.height(12.dp))
