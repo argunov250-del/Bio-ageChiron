@@ -25,6 +25,7 @@ jobs:
           chmod +x gradlew
           ./gradlew --no-daemon :app:assembleDebug
       - name: Sign with persistent Bio-Age key
+        id: sign
         env:
           BIOAGE_KEYSTORE_BASE64: ${{ secrets.BIOAGE_KEYSTORE_BASE64 }}
           BIOAGE_KEYSTORE_PASSWORD: ${{ secrets.BIOAGE_KEYSTORE_PASSWORD }}
@@ -37,9 +38,13 @@ jobs:
           BIOAGE_KEY_ALIAS="${BIOAGE_KEY_ALIAS:-bioage}"
           BIOAGE_KEY_PASSWORD="${BIOAGE_KEY_PASSWORD:-$BIOAGE_KEYSTORE_PASSWORD}"
           export BIOAGE_KEY_PASSWORD
-          for name in BIOAGE_KEYSTORE_BASE64 BIOAGE_KEYSTORE_PASSWORD; do
-            if [ -z "${!name}" ]; then echo "Missing GitHub Actions secret: $name" >&2; exit 1; fi
-          done
+          # Signing is optional: without secrets the APK keeps the runner's random debug
+          # signature, so it can NOT be installed over a previous build (uninstall needed).
+          if [ -z "$BIOAGE_KEYSTORE_BASE64" ] || [ -z "$BIOAGE_KEYSTORE_PASSWORD" ]; then
+            echo "::warning::Signing secrets not set - APK has a one-off debug signature; updating over an installed build will require uninstalling it first."
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           printf '%s' "$BIOAGE_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/bioage-signing.jks"
           APK="app/build/outputs/apk/debug/app-debug.apk"
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" sign \
@@ -51,7 +56,9 @@ jobs:
           "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose "$RUNNER_TEMP/app-signed.apk"
           mv "$RUNNER_TEMP/app-signed.apk" "$APK"
           rm -f "$RUNNER_TEMP/bioage-signing.jks"
+          echo "signed=true" >> "$GITHUB_OUTPUT"
       - name: Verify persistent signature and version
+        if: steps.sign.outputs.signed == 'true'
         env:
           # Public SHA-256 fingerprint of the Bio-Age signing certificate (not a secret).
           # Every release must carry this exact certificate, otherwise Android refuses
@@ -67,9 +74,11 @@ jobs:
           if [ "$ACTUAL" != "$EXPECTED_CERT_SHA256" ]; then
             echo "Signing certificate mismatch: got $ACTUAL, expected $EXPECTED_CERT_SHA256" >&2; exit 1
           fi
-          "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging "$APK" | grep -E "^package:"
+      - name: Show APK version
+        run: |
+          "$ANDROID_HOME/build-tools/35.0.0/aapt2" dump badging app/build/outputs/apk/debug/app-debug.apk | grep -E "^package:"
       - uses: actions/upload-artifact@v4
         with:
-          name: Bio-ageChiron-Alpha-0.5-signed-APK
+          name: Bio-ageChiron-Alpha-0.5-APK
           path: app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
