@@ -20,7 +20,7 @@ g = gradle.read_text()
 if 'io.github.sceneview:sceneview' not in g:
     needle = 'dependencies {'
     if needle not in g: raise SystemExit('Cannot find dependencies block')
-    g = g.replace(needle, needle + '\n    implementation("io.github.sceneview:sceneview:2.3.3")', 1)
+    g = g.replace(needle, needle + '\n    implementation("io.github.sceneview:sceneview:2.3.0")', 1)
 g = g.replace('versionCode = 2', 'versionCode = 3').replace('versionName = "0.2.0-alpha"', 'versionName = "0.3.0-alpha"')
 gradle.write_text(g)
 print('Alpha 0.3 patch applied. Run ./gradlew :app:assembleDebug and fix any dependency/API issues.')
