@@ -89,12 +89,12 @@ private fun BioAge(prefs: SharedPreferences) {
     val colors = darkColorScheme(primary = Aqua, onPrimary = Deep, background = Deep, surface = Deep, onSurface = Ink, onSurfaceVariant = Muted, outline = Muted)
     MaterialTheme(colorScheme = colors) {
         Box(Modifier.fillMaxSize().background(Deep)) {
-            AlpineScene(camera)
+            Caucasus3DScene(camera)
             Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0x77051728), Color.Transparent, Color(0xD9081927)), startY = 0f)))
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 0.2", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  ALPHA 0.3", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
                 Spacer(Modifier.weight(1f))
                 Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp).clip(RoundedCornerShape(28.dp)).background(Glass).verticalScroll(rememberScrollState()).padding(20.dp)) {
@@ -172,11 +172,11 @@ private fun BioAge(prefs: SharedPreferences) {
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 0.2", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Alpha 0.3", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
                             Spacer(Modifier.height(12.dp))
-                            Text("Панорама — процедурная 2D-сцена, а не 3D-модель. Health Connect, резервные копии и расчёт биологического возраста ещё не добавлены.", color = Muted, fontSize = 13.sp, lineHeight = 20.sp)
+                            Text("Панорама — настоящая 3D-модель рельефа на Filament (стилизованная, не геодезическая). Health Connect, резервные копии и расчёт биологического возраста ещё не добавлены.", color = Muted, fontSize = 13.sp, lineHeight = 20.sp)
                         }
                     }
                 }

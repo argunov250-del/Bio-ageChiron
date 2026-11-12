@@ -6,13 +6,14 @@ plugins {
 android {
     namespace = "com.bioage.alpha"
     compileSdk = 35
-    defaultConfig { applicationId = "com.bioage.alpha"; minSdk = 26; targetSdk = 35; versionCode = 2; versionName = "0.2.0-alpha" }
+    defaultConfig { applicationId = "com.bioage.alpha"; minSdk = 26; targetSdk = 35; versionCode = 3; versionName = "0.3.0-alpha" }
     buildTypes { release { isMinifyEnabled = false } }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { compose = true }
 }
 dependencies {
+    implementation("io.github.sceneview:sceneview:2.3.3")
     implementation(platform("androidx.compose:compose-bom:2024.12.01"))
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation("androidx.compose.ui:ui")
