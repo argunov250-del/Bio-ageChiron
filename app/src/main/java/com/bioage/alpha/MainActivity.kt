@@ -81,6 +81,7 @@ private fun BioAge(prefs: SharedPreferences) {
     var sleep by remember { mutableStateOf(prefs.getString("sleep", "") ?: "") }
     var mood by remember { mutableStateOf(prefs.getString("mood", "") ?: "") }
     var saved by remember { mutableStateOf(false) }
+    var historyRefresh by remember { mutableIntStateOf(0) }
     var camera by remember { mutableFloatStateOf(0f) }
     val today = remember { LocalDate.now().toString() }
     val habitNames = listOf("Прогулка", "Восстановление", "Самочувствие")
@@ -94,7 +95,7 @@ private fun BioAge(prefs: SharedPreferences) {
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 0.7", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  ALPHA 0.12", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
                 Spacer(Modifier.weight(1f))
                 Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp).clip(RoundedCornerShape(28.dp)).background(Glass).verticalScroll(rememberScrollState()).padding(20.dp)) {
@@ -119,7 +120,7 @@ private fun BioAge(prefs: SharedPreferences) {
                                 Text("ХИРОН", fontWeight = FontWeight.Bold, color = Aqua, letterSpacing = 1.sp)
                             }
                             Spacer(Modifier.height(5.dp))
-                            Text(chiron(sleep, steps), color = Ink, fontSize = 14.sp, lineHeight = 21.sp)
+                            Text(chironV12(sleep, steps, mood, done), color = Ink, fontSize = 14.sp, lineHeight = 21.sp)
                         }
                         1 -> {
                             Text("Здоровье", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
@@ -131,10 +132,11 @@ private fun BioAge(prefs: SharedPreferences) {
                             Spacer(Modifier.height(8.dp))
                             OutlinedTextField(mood, { mood = it.take(100); saved = false }, label = { Text("Как ты себя чувствуешь?") }, modifier = Modifier.fillMaxWidth())
                             Spacer(Modifier.height(14.dp))
-                            Button(onClick = { prefs.edit().putString("steps", steps).putString("sleep", sleep).putString("mood", mood).apply(); saved = true }, modifier = Modifier.fillMaxWidth()) { Text("Сохранить") }
+                            Button(onClick = { prefs.edit().putString("steps", steps).putString("sleep", sleep).putString("mood", mood).apply(); saveHealthHistory(prefs, steps, sleep, mood); historyRefresh++; saved = true }, modifier = Modifier.fillMaxWidth()) { Text("Сохранить") }
                             if (saved) Text("Данные сохранены", color = Aqua, fontSize = 12.sp)
                             Spacer(Modifier.height(8.dp))
                             Text("Показатели не являются медицинской оценкой.", color = Muted, fontSize = 12.sp)
+                            HealthHistoryPanel(prefs, historyRefresh)
                         }
                         2 -> {
                             Text("Твой прогресс", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
@@ -172,11 +174,12 @@ private fun BioAge(prefs: SharedPreferences) {
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 0.7", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Alpha 0.12", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
+                            LocalBackupPanel(prefs)
                             Spacer(Modifier.height(12.dp))
-                            Text("Панорама — настоящая 3D-модель рельефа на Filament (стилизованная, не геодезическая). Health Connect, резервные копии и расчёт биологического возраста ещё не добавлены.", color = Muted, fontSize = 13.sp, lineHeight = 20.sp)
+                            Text("Панорама — стилизованная 3D-модель Кавказа на Filament. Health Connect и расчёт биологического возраста пока не добавлены.", color = Muted, fontSize = 13.sp, lineHeight = 20.sp)
                         }
                     }
                 }
