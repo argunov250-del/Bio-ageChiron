@@ -97,7 +97,7 @@ fun Analytics30(prefs: SharedPreferences, refresh: Int) {
             }
         }
     }
-    Text("Каждый столбец — день с записью. Пустые дни не заменяются нулями.", color = Dim30, fontSize = 11.sp)
+    if (values.any { it != null }) Text("Каждый столбец — день с записью. Пустые дни не заменяются нулями.", color = Dim30, fontSize = 11.sp)
 }
 
 /** Alpha 0.22: transparent wellness signal, deliberately not a clinical score. */
