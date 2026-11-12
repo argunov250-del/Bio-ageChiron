@@ -39,7 +39,7 @@ private val Ink = Color(0xFFF1F8FA)
 private val Muted = Color(0xFFB7CDD5)
 private val Aqua = Color(0xFFB5F0E7)
 private val Deep = Color(0xFF091D2C)
-private val Glass = Color(0xD9163044)
+private val Glass = Color(0xC9163044)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,18 +93,19 @@ private fun BioAge(prefs: SharedPreferences) {
     BackHandler(enabled = chatOpen || tab != 0) { if (chatOpen) chatOpen = false else tab = 0 }
     MaterialTheme(colorScheme = colors) {
         Box(Modifier.fillMaxSize().background(Deep)) {
+            AlpineFallback9()
             CaucasusThreeBackground()
-            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0x48051728), Color.Transparent, Color(0xB9081927)), startY = 0f)))
+            Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0x38051728), Color.Transparent, Color(0xB9081927)), startY = 0f)))
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 8.00", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  VISUAL 9.00", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
                 // Card area takes the space between header and tab bar; the card sits at its bottom
                 // and scrolls inside it, so the tab bar is never pushed off screen.
                 BoxWithConstraints(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.BottomCenter) {
                 Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp)
-                    .then(if (tab == 0 && !chatOpen) Modifier.heightIn(max = maxHeight * 0.60f) else Modifier)
+                    .then(if (tab == 0 && !chatOpen) Modifier.heightIn(max = maxHeight * 0.46f) else Modifier)
                     .clip(RoundedCornerShape(28.dp)).background(Glass)
                     .verticalScroll(rememberScrollState()).padding(20.dp)) {
                     when (tab) {
@@ -116,7 +117,7 @@ private fun BioAge(prefs: SharedPreferences) {
                                 }
                                 UnifiedChiron(prefs, steps, sleep, mood, done)
                             } else {
-                            UnifiedHome(prefs, steps, sleep, done, done + historyRefresh) { chatOpen = true }
+                            Major9Home(prefs, steps, sleep, done) { chatOpen = true }
                             }
                         }
                         1 -> {
@@ -133,10 +134,10 @@ private fun BioAge(prefs: SharedPreferences) {
                             if (saved) Text("Данные сохранены", color = Aqua, fontSize = 12.sp)
                             Spacer(Modifier.height(8.dp))
                             Text("Показатели не являются медицинской оценкой.", color = Muted, fontSize = 12.sp)
-                            Wellness620(prefs, historyRefresh)
+                            // Major 9: old duplicated wellness block hidden
                             Spacer(Modifier.height(12.dp))
-                            UnifiedHealth(prefs, historyRefresh)
-                            Goals30(prefs, steps)  // kept: the only place to edit the step goal
+                            Major9Health(prefs, historyRefresh)
+                            Goals30(prefs, steps)
                             Spacer(Modifier.height(10.dp))
                             // Moved into unified experience: ChironCoach200(prefs, historyRefresh)
                             Spacer(Modifier.height(12.dp))
@@ -188,7 +189,7 @@ private fun BioAge(prefs: SharedPreferences) {
                                 }
                             }
                             Spacer(Modifier.height(8.dp))
-                            UnifiedProgress(prefs, done + historyRefresh)
+                            Major9Progress(prefs, done + historyRefresh)
                             RestDayToggle700()  // kept: rest-day entry formerly inside SummitJourney30
                             // Moved into unified experience: SummitMilestones50(prefs, done + historyRefresh)
                             WeeklyFocus70(prefs)  // kept: the only place to edit the weekly focus
@@ -197,7 +198,7 @@ private fun BioAge(prefs: SharedPreferences) {
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 8.00", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Visual 9.00", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
                             ChironDataCenter(prefs)
