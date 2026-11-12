@@ -6,7 +6,7 @@ plugins {
 android {
     namespace = "com.bioage.alpha"
     compileSdk = 35
-    defaultConfig { applicationId = "com.bioage.alpha"; minSdk = 26; targetSdk = 35; versionCode = 12; versionName = "0.12.0-alpha" }
+    defaultConfig { applicationId = "com.bioage.alpha"; minSdk = 26; targetSdk = 35; versionCode = 17; versionName = "0.17.0-alpha" }
     buildTypes { release { isMinifyEnabled = false } }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     kotlinOptions { jvmTarget = "17" }

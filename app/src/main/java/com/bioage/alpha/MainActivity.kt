@@ -95,9 +95,11 @@ private fun BioAge(prefs: SharedPreferences) {
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 0.12", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  ALPHA 0.17", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
-                Spacer(Modifier.weight(1f))
+                // Card area takes the space between header and tab bar; the card sits at its bottom
+                // and scrolls inside it, so the tab bar is never pushed off screen.
+                Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.BottomCenter) {
                 Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp).clip(RoundedCornerShape(28.dp)).background(Glass).verticalScroll(rememberScrollState()).padding(20.dp)) {
                     when (tab) {
                         0 -> {
@@ -120,7 +122,7 @@ private fun BioAge(prefs: SharedPreferences) {
                                 Text("ХИРОН", fontWeight = FontWeight.Bold, color = Aqua, letterSpacing = 1.sp)
                             }
                             Spacer(Modifier.height(5.dp))
-                            Text(chironV12(sleep, steps, mood, done), color = Ink, fontSize = 14.sp, lineHeight = 21.sp)
+                            Text(chironV17(prefs, sleep, steps, mood, done, historyRefresh), color = Ink, fontSize = 14.sp, lineHeight = 21.sp)
                         }
                         1 -> {
                             Text("Здоровье", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
@@ -137,6 +139,7 @@ private fun BioAge(prefs: SharedPreferences) {
                             Spacer(Modifier.height(8.dp))
                             Text("Показатели не являются медицинской оценкой.", color = Muted, fontSize = 12.sp)
                             HealthHistoryPanel(prefs, historyRefresh)
+                            HealthTrendsPanel(prefs, historyRefresh)
                         }
                         2 -> {
                             Text("Твой прогресс", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
@@ -174,7 +177,7 @@ private fun BioAge(prefs: SharedPreferences) {
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 0.12", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Alpha 0.17", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
                             LocalBackupPanel(prefs)
@@ -182,6 +185,7 @@ private fun BioAge(prefs: SharedPreferences) {
                             Text("Панорама — стилизованная 3D-модель Кавказа на Filament. Health Connect и расчёт биологического возраста пока не добавлены.", color = Muted, fontSize = 13.sp, lineHeight = 20.sp)
                         }
                     }
+                }
                 }
                 Spacer(Modifier.height(10.dp))
                 Row(Modifier.fillMaxWidth().background(Color(0xF5091D2C)).padding(vertical = 9.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
