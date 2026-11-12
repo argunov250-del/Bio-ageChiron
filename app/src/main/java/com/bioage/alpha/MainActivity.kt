@@ -98,13 +98,13 @@ private fun BioAge(prefs: SharedPreferences) {
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 6.20", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  ALPHA 7.00", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
                 // Card area takes the space between header and tab bar; the card sits at its bottom
                 // and scrolls inside it, so the tab bar is never pushed off screen.
                 BoxWithConstraints(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.BottomCenter) {
                 Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp)
-                    .then(if (tab == 0 && !chatOpen) Modifier.heightIn(max = maxHeight * 0.47f) else Modifier)
+                    .then(if (tab == 0 && !chatOpen) Modifier.heightIn(max = maxHeight * 0.60f) else Modifier)
                     .clip(RoundedCornerShape(28.dp)).background(Glass)
                     .verticalScroll(rememberScrollState()).padding(20.dp)) {
                     when (tab) {
@@ -114,11 +114,9 @@ private fun BioAge(prefs: SharedPreferences) {
                                     TextButton(onClick = { chatOpen = false }) { Text("← Назад") }
                                     Text("Хирон · диалог", color = Ink, fontSize = 20.sp)
                                 }
-                                ChironPresence620(prefs, historyRefresh)
-                                Spacer(Modifier.height(16.dp))
-                                ChironChat30(prefs, sleep, steps, mood, done)
+                                UnifiedChiron(prefs, steps, sleep, mood, done)
                             } else {
-                            Home600(prefs, steps, sleep, done, done + historyRefresh) { chatOpen = true }
+                            UnifiedHome(prefs, steps, sleep, done, done + historyRefresh) { chatOpen = true }
                             }
                         }
                         1 -> {
@@ -137,10 +135,10 @@ private fun BioAge(prefs: SharedPreferences) {
                             Text("Показатели не являются медицинской оценкой.", color = Muted, fontSize = 12.sp)
                             Wellness620(prefs, historyRefresh)
                             Spacer(Modifier.height(12.dp))
-                            Health500(prefs, historyRefresh)
-                            Goals30(prefs, steps)
+                            UnifiedHealth(prefs, historyRefresh)
+                            Goals30(prefs, steps)  // kept: the only place to edit the step goal
                             Spacer(Modifier.height(10.dp))
-                            ChironCoach200(prefs, historyRefresh)
+                            // Moved into unified experience: ChironCoach200(prefs, historyRefresh)
                             Spacer(Modifier.height(12.dp))
                             OutlinedButton(onClick = { healthExpanded = !healthExpanded }, modifier = Modifier.fillMaxWidth()) {
                                 Text(if (healthExpanded) "Скрыть историю и графики" else "Показать историю и графики")
@@ -190,15 +188,16 @@ private fun BioAge(prefs: SharedPreferences) {
                                 }
                             }
                             Spacer(Modifier.height(8.dp))
-                            SummitJourney30(prefs, done + historyRefresh)
-                            SummitMilestones50(prefs, done + historyRefresh)
-                            WeeklyFocus70(prefs)
-                            Reports30(prefs, done + historyRefresh)
+                            UnifiedProgress(prefs, done + historyRefresh)
+                            RestDayToggle700()  // kept: rest-day entry formerly inside SummitJourney30
+                            // Moved into unified experience: SummitMilestones50(prefs, done + historyRefresh)
+                            WeeklyFocus70(prefs)  // kept: the only place to edit the weekly focus
+                            // Moved into unified experience: Reports30(prefs, done + historyRefresh)
                         }
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 6.20", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Alpha 7.00", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
                             LocalBackupPanel(prefs)
