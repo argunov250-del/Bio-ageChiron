@@ -78,6 +78,7 @@ private fun migrateFromAlpha01(prefs: SharedPreferences) {
 @Composable
 private fun BioAge(prefs: SharedPreferences) {
     var tab by remember { mutableIntStateOf(0) }
+    var chatOpen by remember { mutableStateOf(false) }
     var steps by remember { mutableStateOf(prefs.getString("steps", "") ?: "") }
     var sleep by remember { mutableStateOf(prefs.getString("sleep", "") ?: "") }
     var mood by remember { mutableStateOf(prefs.getString("mood", "") ?: "") }
@@ -89,7 +90,7 @@ private fun BioAge(prefs: SharedPreferences) {
     var habits by remember { mutableStateOf((0..2).map { prefs.getBoolean("day_${today}_habit_$it", false) }) }
     val done = habits.count { it }
     val colors = darkColorScheme(primary = Aqua, onPrimary = Deep, background = Deep, surface = Deep, onSurface = Ink, onSurfaceVariant = Muted, outline = Muted)
-    BackHandler(enabled = tab != 0) { tab = 0 }
+    BackHandler(enabled = chatOpen || tab != 0) { if (chatOpen) chatOpen = false else tab = 0 }
     MaterialTheme(colorScheme = colors) {
         Box(Modifier.fillMaxSize().background(Deep)) {
             Caucasus3DScene(camera)
@@ -97,14 +98,24 @@ private fun BioAge(prefs: SharedPreferences) {
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 0.30", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  ALPHA 0.31", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
                 // Card area takes the space between header and tab bar; the card sits at its bottom
                 // and scrolls inside it, so the tab bar is never pushed off screen.
-                Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.BottomCenter) {
-                Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp).clip(RoundedCornerShape(28.dp)).background(Glass).verticalScroll(rememberScrollState()).padding(20.dp)) {
+                BoxWithConstraints(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.BottomCenter) {
+                Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp)
+                    .then(if (tab == 0 && !chatOpen) Modifier.heightIn(max = maxHeight * 0.59f) else Modifier)
+                    .clip(RoundedCornerShape(28.dp)).background(Glass)
+                    .verticalScroll(rememberScrollState()).padding(20.dp)) {
                     when (tab) {
                         0 -> {
+                            if (chatOpen) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    TextButton(onClick = { chatOpen = false }) { Text("← Назад") }
+                                    Text("Хирон · диалог", color = Ink, fontSize = 20.sp)
+                                }
+                                ChironChat30(prefs, sleep, steps, mood, done)
+                            } else {
                             Text("Твой путь к вершине", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(6.dp))
                             Text("Каждый день — небольшой шаг вперёд", color = Muted, fontSize = 13.sp)
@@ -124,7 +135,11 @@ private fun BioAge(prefs: SharedPreferences) {
                             }
                             Spacer(Modifier.height(5.dp))
                             Text(chiron30(prefs, sleep, steps, mood, done), color = Ink, fontSize = 14.sp, lineHeight = 21.sp)
-                            ChironChat30(prefs, sleep, steps, mood, done)
+                            Spacer(Modifier.height(10.dp))
+                            OutlinedButton(onClick = { chatOpen = true }, modifier = Modifier.fillMaxWidth()) {
+                                Text("Открыть диалог с Хироном")
+                            }
+                            }
                         }
                         1 -> {
                             Text("Здоровье", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
@@ -183,7 +198,7 @@ private fun BioAge(prefs: SharedPreferences) {
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 0.30", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Alpha 0.31", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
                             LocalBackupPanel(prefs)
@@ -197,7 +212,7 @@ private fun BioAge(prefs: SharedPreferences) {
                 Spacer(Modifier.height(10.dp))
                 Row(Modifier.fillMaxWidth().background(Color(0xF5091D2C)).padding(vertical = 9.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                     listOf("Главная", "Здоровье", "Прогресс", "Профиль").forEachIndexed { i, title ->
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { tab = i }.padding(horizontal = 4.dp, vertical = 6.dp)) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { tab = i; chatOpen = false }.padding(horizontal = 4.dp, vertical = 6.dp)) {
                             Text(title, color = if(tab == i) Aqua else Muted, fontWeight = if(tab == i) FontWeight.Bold else FontWeight.Normal, fontSize = 12.sp)
                             Spacer(Modifier.height(4.dp))
                             Box(Modifier.width(19.dp).height(2.dp).background(if(tab == i) Aqua else Color.Transparent))

@@ -85,7 +85,9 @@ fun Analytics30(prefs: SharedPreferences, refresh: Int) {
     Text("Средние шаги: ${s.avgSteps?.roundToInt()?.toString() ?: "нет данных"}", color = Text30)
     Text("Средний сон: ${s.avgSleep?.let { String.format(Locale.getDefault(), "%.1f ч", it) } ?: "нет данных"}", color = Text30)
     val max = (values.filterNotNull().maxOrNull() ?: 1).coerceAtLeast(1)
-    Canvas(Modifier.fillMaxWidth().height(96.dp)) {
+    if (values.all { it == null }) {
+        Text("Пока нет записей за выбранный период. Добавь данные в разделе «Здоровье».", color = Dim30, fontSize = 12.sp)
+    } else Canvas(Modifier.fillMaxWidth().height(96.dp)) {
         val gap = size.width / records.size
         values.forEachIndexed { i, value ->
             if (value != null) {
@@ -122,7 +124,17 @@ fun Goals30(prefs: SharedPreferences, steps: String) {
     Spacer(Modifier.height(16.dp))
     Text("Личная цель по шагам", color = Text30, fontWeight = FontWeight.Bold, fontSize = 18.sp)
     Text("${target.roundToInt()} шагов · можно менять в любой день", color = Dim30)
-    Slider(value = target, onValueChange = { target = (it / 500f).roundToInt() * 500f }, onValueChangeFinished = { prefs.edit().putInt("goal_steps", target.roundToInt()).apply() }, valueRange = 1000f..20000f, steps = 37)
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+        OutlinedButton(onClick = {
+            target = (target - 500f).coerceAtLeast(1000f)
+            prefs.edit().putInt("goal_steps", target.roundToInt()).apply()
+        }) { Text("−500") }
+        Text("${target.roundToInt()}", color = Accent30, fontWeight = FontWeight.Bold)
+        OutlinedButton(onClick = {
+            target = (target + 500f).coerceAtMost(20000f)
+            prefs.edit().putInt("goal_steps", target.roundToInt()).apply()
+        }) { Text("+500") }
+    }
     val actual = steps.toIntOrNull()
     if (actual != null) {
         LinearProgressIndicator(progress = { (actual / target).coerceIn(0f, 1f) }, modifier = Modifier.fillMaxWidth())
