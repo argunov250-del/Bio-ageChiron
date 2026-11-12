@@ -26,7 +26,7 @@ fun Home500(prefs: SharedPreferences, steps: String, sleep: String, done: Int, r
     Hero300(steps, sleep, done)
     Spacer(Modifier.height(12.dp))
     // Keep the 3D camera control (OrbitControl30) and the Alpha 4.00 route (AlpineRoute400) on Home.
-    OrbitControl30(camera, onCamera)
+    Text("Автоматическая панорама Кавказа", color = soft500, fontSize = 11.sp) // Ручное управление камерой отключено
     Spacer(Modifier.height(12.dp))
     AlpineRoute400(prefs, refresh)
     Spacer(Modifier.height(10.dp))

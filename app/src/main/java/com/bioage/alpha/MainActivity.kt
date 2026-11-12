@@ -93,12 +93,12 @@ private fun BioAge(prefs: SharedPreferences) {
     BackHandler(enabled = chatOpen || tab != 0) { if (chatOpen) chatOpen = false else tab = 0 }
     MaterialTheme(colorScheme = colors) {
         Box(Modifier.fillMaxSize().background(Deep)) {
-            Caucasus3DScene()
+            CaucasusThreeBackground()
             Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0x48051728), Color.Transparent, Color(0xB9081927)), startY = 0f)))
             Column(Modifier.fillMaxSize().safeDrawingPadding()) {
                 Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 14.dp)) {
                     Text("BIO—AGE", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 2.sp)
-                    Text("КАВКАЗ  /  ALPHA 6.00", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
+                    Text("КАВКАЗ  /  ALPHA 6.10", fontSize = 11.sp, color = Aqua, letterSpacing = 1.5.sp)
                 }
                 // Card area takes the space between header and tab bar; the card sits at its bottom
                 // and scrolls inside it, so the tab bar is never pushed off screen.
@@ -194,7 +194,7 @@ private fun BioAge(prefs: SharedPreferences) {
                         else -> {
                             Text("Профиль", fontSize = 23.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                             Spacer(Modifier.height(10.dp))
-                            Text("Bio-Age Alpha 6.00", color = Aqua, fontWeight = FontWeight.Bold)
+                            Text("Bio-Age Alpha 6.10", color = Aqua, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(8.dp))
                             Text("Офлайн-прототип. Записи хранятся локально на этом телефоне.", color = Ink, lineHeight = 21.sp)
                             LocalBackupPanel(prefs)
